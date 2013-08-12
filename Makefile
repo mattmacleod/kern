@@ -1,4 +1,4 @@
-SOURCES=src/boot.o src/main.o
+SOURCES=src/boot.o src/common.o src/framebuffer.o src/main.o
 CFLAGS=-m32 -ggdb -nostdlib -nostdinc -fno-builtin -fno-stack-protector
 LDFLAGS=-Tlink.ld -melf_i386
 AS=nasm
