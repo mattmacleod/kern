@@ -5,8 +5,10 @@ AS=nasm
 ASFLAGS=-felf
 BUILDDIR= build
 
-all: $(SOURCES) 
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o $(BUILDDIR)/kernel
+all: $(SOURCES) link
+
+link:
+	ld $(LDFLAGS) -o $(BUILDDIR)/kernel $(SOURCES)
 
 clean:
-	-rm src/*.o $(BUILDDIR)/kernel
+	-rm src/*.o $(BUILDDIR)/*
