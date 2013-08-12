@@ -10,3 +10,4 @@ void fb_clear();
 void fb_write_str(char *c);
 void fb_write_char(char c);
 void fb_write_char_with_color(char c, u8int fg, u8int bg);
+void fb_set_colors(u8int fg, u8int bg);

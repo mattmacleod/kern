@@ -35,14 +35,14 @@ static void scroll(){
         // Move the current text chunk that makes up the screen
         // back in the buffer by a line
         int i;
-        for (i = 0; i < (FRAMEBUFFER_ROWS-1 * FRAMEBUFFER_COLS); i++){
+        for (i = 0; i < ((FRAMEBUFFER_ROWS-1) * FRAMEBUFFER_COLS); i++){
             video_memory[i] = video_memory[i+FRAMEBUFFER_COLS];
         }
 
         // The last line should now be blank. Do this by writing
         // 80 spaces to it.
         u16int blank = character_with_color( 0x20, defaultForeground, defaultBackground);
-        for (i = (FRAMEBUFFER_ROWS-1 * FRAMEBUFFER_COLS); i < (FRAMEBUFFER_ROWS * FRAMEBUFFER_COLS); i++){
+        for (i = ((FRAMEBUFFER_ROWS-1) * FRAMEBUFFER_COLS); i < (FRAMEBUFFER_ROWS * FRAMEBUFFER_COLS); i++){
             video_memory[i] = blank;
         }
 
@@ -51,6 +51,11 @@ static void scroll(){
 
     }
 
+}
+
+void fb_set_colors( u8int fg, u8int bg ){
+    defaultForeground = fg;
+    defaultBackground = bg;
 }
 
 // Write a single character to the framebuffer with the default colours
@@ -128,3 +133,29 @@ void fb_write_str(char *c){
     }
 }
 
+static int int_pow( int a, int b ){
+    if( b == 0 ){
+        return 1;
+    } else if( b == 1 ){
+        return a;
+    } else {
+        return a * int_pow(a, b-1);
+    }
+}
+
+// Outputs an integer to the framebuffer.
+void fb_write_int(int i){
+    
+    int field_width = (i / 10) + 1;
+    int pos = 0;
+    char out[20]; // Max 64-bit uInt length
+
+    for( pos = 0; pos < field_width; pos++ ){
+        int chr = (i / int_pow( 10, (field_width - pos) - 1 )) % 10;
+        out[pos] = chr + 48;
+    }
+
+    out[field_width] = '\0';
+    fb_write_str(out);
+
+}
