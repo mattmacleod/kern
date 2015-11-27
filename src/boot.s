@@ -4,32 +4,24 @@ MBOOT_HEADER_MAGIC  equ 0x1BADB002 ; Multiboot Magic value
 MBOOT_HEADER_FLAGS  equ MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO
 MBOOT_CHECKSUM      equ -(MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 
-[BITS 32]                       ; All instructions should be 32-bit.
+bits 32
 
-[GLOBAL mboot]                  ; Make 'mboot' accessible from C.
-[EXTERN code]                   ; Start of the '.text' section.
-[EXTERN bss]                    ; Start of the .bss section.
-[EXTERN end]                    ; End of the last loadable section.
-
+section .multiboot_header
 mboot:
   dd  MBOOT_HEADER_MAGIC        ; GRUB will search for this value on each
                                 ; 4-byte boundary in your kernel file
   dd  MBOOT_HEADER_FLAGS        ; How GRUB should load your file / settings
   dd  MBOOT_CHECKSUM            ; To ensure that the above values are correct
    
-  dd  mboot                     ; Location of this descriptor
-  dd  code                      ; Start of kernel '.text' (code) section.
-  dd  bss                       ; End of kernel '.data' section.
-  dd  end                       ; End of kernel.
-  dd  start                     ; Kernel entry point (initial EIP).
+  dw 0
+  dw 0
+  dd 8
 
-[GLOBAL start]                  ; Kernel entry point.
-[EXTERN main]                   ; This is the entry point of our C code
+global start
 
+section .text
 start:
-  push    ebx                   ; Load multiboot header location
-  cli
-  call main
-  cli
-  hlt
-  
+    extern main
+    call main
+    mov dword [0xb8000], 0x2f4b2f4f
+    hlt

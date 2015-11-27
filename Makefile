@@ -1,19 +1,20 @@
-SOURCES=src/boot.o src/main.o
-CFLAGS=-m32 -ggdb -nostdlib -nostdinc -fno-builtin -fno-stack-protector
-LDFLAGS=-Tlink.ld -melf_i386
+BUILDDIR=build
+
+ASM_MODULES=src/boot.o
+RUST_LIB=target/debug/libkern.a
+
+LDFLAGS=--gc-sections -Tlink.ld -melf_i386
+
 AS=nasm
 ASFLAGS=-felf
-BUILDDIR=build
-RUSTC=rustc
-ARCH=i686
 
-all: $(SOURCES) link
+all: $(ASM_MODULES) $(RUST_LIB) link
 
-%.o: %.rs 
-	$(RUSTC) $< -o $@
+$(RUST_LIB):
+	@cargo rustc -- -Z no-landing-pads --verbose -C no-redzone
 
 link:
-	ld $(LDFLAGS) -o $(BUILDDIR)/kernel $(SOURCES)
+	ld $(LDFLAGS) -o $(BUILDDIR)/kernel $(ASM_MODULES) $(RUST_LIB)
 
 clean:
-	-rm src/*.o $(BUILDDIR)/*
+	@cargo clean

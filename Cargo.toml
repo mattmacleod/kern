@@ -1,0 +1,10 @@
+[package]
+name = "kern"
+version = "0.1.0"
+authors = ["Matthew MacLeod <matt@umm.io>"]
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+rlibc = "0.1.4"
