@@ -1,3 +1,3 @@
 #!/bin/bash
 
-qemu-system-i386 -k en-gb -gdb tcp::1234 -fda tmp/floppy.img -boot a -no-fd-bootchk -net none -d int
+qemu-system-x86_64 -drive format=raw,file=build/kernel.iso -gdb tcp::1234

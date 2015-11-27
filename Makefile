@@ -3,12 +3,14 @@ BUILDDIR=build
 ASM_MODULES=src/boot.o
 RUST_LIB=target/debug/libkern.a
 
-LDFLAGS=--gc-sections -Tlink.ld -melf_i386
+LDFLAGS=-n --gc-sections -Tlink.ld -melf_x86_64
 
 AS=nasm
-ASFLAGS=-felf
+ASFLAGS=-felf64
 
-all: $(ASM_MODULES) $(RUST_LIB) link
+.PHONY: all clean link iso
+
+all: $(ASM_MODULES) $(RUST_LIB) link iso
 
 $(RUST_LIB):
 	@cargo rustc -- -Z no-landing-pads --verbose -C no-redzone
@@ -16,5 +18,12 @@ $(RUST_LIB):
 link:
 	ld $(LDFLAGS) -o $(BUILDDIR)/kernel $(ASM_MODULES) $(RUST_LIB)
 
+iso:
+	mkdir -p iso/boot/grub
+	cp $(BUILDDIR)/kernel iso/boot
+	cp grub.cfg iso/boot/grub
+	grub-mkrescue -o build/kernel.iso iso
+
 clean:
+	rm -f $(ASM_MODULES)
 	@cargo clean

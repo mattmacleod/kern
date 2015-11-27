@@ -6,6 +6,9 @@ extern crate rlibc;
 
 #[no_mangle]
 pub extern fn main() -> i64 {
+  unsafe {
+    asm!("mov DWORD PTR [0xb8000], 0x2f4b2f4f" :::: "intel")
+  }
   loop{}
 }
 

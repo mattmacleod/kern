@@ -1,6 +1,10 @@
-## Kernel experiment
+# Kernel experiment
 
-Developed from James Molloy's demo kernel: http://www.jamesmolloy.co.uk
+## Useful references
+
+http://www.gnu.org/software/grub/manual/multiboot/html_node/multiboot.h.html
+http://www.jamesmolloy.co.uk
+http://os.phil-opp.com
 
 ## How to
 
