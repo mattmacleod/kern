@@ -1,6 +1,6 @@
 bits 32
 global start
-global long_mode_start
+extern long_mode_start
 
 MULTIBOOT_HEADER_MAGIC equ 0xE85250D6
 MULTIBOOT_ARCH         equ 0
@@ -49,13 +49,6 @@ start:
 
     jmp gdt64.code:long_mode_start
 
-
-section .text
-bits 64
-long_mode_start:
-    extern main
-    call main
-    hlt
 
 
 ; Checks that we were actually loaded by a multiboot-compliant bootloader, as

@@ -1,6 +1,6 @@
 BUILDDIR=build
 
-ASM_MODULES=src/boot.o
+ASM_MODULES=src/boot.o src/long_mode.o
 RUST_LIB=target/debug/libkern.a
 
 LDFLAGS=-n --gc-sections -Tlink.ld -melf_x86_64
