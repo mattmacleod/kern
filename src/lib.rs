@@ -9,6 +9,7 @@ mod screen;
 #[no_mangle]
 pub fn main() {
   screen::clear();
+  screen::write_string(b"Hello world!", 0);
   loop{}
 }
 
