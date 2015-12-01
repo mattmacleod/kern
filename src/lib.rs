@@ -10,9 +10,7 @@ mod screen;
 pub fn main() {
   screen::clear();
   screen::write_string(b"Hello world!", 0);
-  loop{}
 }
-
 
 #[lang = "eh_personality"] extern fn eh_personality() {}
 #[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }

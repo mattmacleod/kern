@@ -32,16 +32,3 @@ pub fn write_string(s: &[u8], row: u8) {
     write_char(*char_byte, foreground, background, i as u8, row);
   }
 }
-
-//   let hello = b" ";
-//   let color_byte = 0x01; // white / blue
-
-//   let mut hello_colored = [0; 80*40];
-//   for (i, char_byte) in hello.into_iter().enumerate() {
-//       hello_colored[i*2] = *char_byte;
-//   }
-
-//   let buffer_ptr = 0xb8000 as *mut _;
-//   unsafe { *buffer_ptr = hello_colored };
-
-// }
