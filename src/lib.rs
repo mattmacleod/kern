@@ -1,12 +1,11 @@
 #![feature(no_std)]
 #![no_std]
-#![feature(lang_items, asm, const_fn, unique, core_str_ext)]
+#![feature(lang_items, asm, const_fn, collections)]
 
 extern crate rlibc;
 use core::fmt;
 use core::fmt::Display;
 use core::fmt::Formatter;
-use core::ptr::Unique;
 use core::fmt::Write;
 
 mod screen;
@@ -17,10 +16,9 @@ pub fn main() {
   screen::write_string(b"Kernel-mode FizzBuzz", 0);
   
   for i in 1..20 {
-    let mut s: &[u8];
     let res = fizz_buzz(i);
     let s = format!("{}", res);
-    screen::write_string(s, (i+1) as u8);
+    screen::write_string(s.as_bytes(), (i+1) as u8);
   }
 }
 

@@ -5,6 +5,7 @@
 http://www.gnu.org/software/grub/manual/multiboot/html_node/multiboot.h.html
 http://www.jamesmolloy.co.uk
 http://os.phil-opp.com
+https://github.com/thepowersgang/rust-barebones-kernel
 
 ## How to
 
