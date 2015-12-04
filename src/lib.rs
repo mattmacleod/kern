@@ -15,11 +15,11 @@ pub fn main() {
   screen::clear();
   screen::write_string(b"Kernel-mode FizzBuzz", 0);
   
-  for i in 1..20 {
-    let res = fizz_buzz(i);
-    let s = format!("{}", res);
-    screen::write_string(s.as_bytes(), (i+1) as u8);
-  }
+  // for i in 1..20 {
+  //   let res = fizz_buzz(i);
+  //   let s = format!("{}", res);
+  //   screen::write_string(s.as_bytes(), (i+1) as u8);
+  // }
 }
 
 enum FizzBuzzResult {
