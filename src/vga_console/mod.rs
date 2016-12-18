@@ -71,10 +71,6 @@ pub fn clear() {
     unsafe { WRITER.clear(); }
 }
 
-pub fn write_str(s: &str) {
-    unsafe { WRITER.write_str(s); }
-}
-
 pub fn writer() -> &'static mut Writer {
     unsafe { &mut WRITER }
 }
@@ -83,7 +79,7 @@ pub fn writer() -> &'static mut Writer {
 impl Writer {
 
     // Write a byte to the screen, inserting a new line if required.
-    pub fn write_byte(&mut self, byte: u8) {
+    fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
 
@@ -126,15 +122,14 @@ impl Writer {
         self.column_position = 0;
     }
 
-    pub fn write_str(&mut self, s: &str) {
-        for byte in s.bytes() {
-          self.write_byte(byte)
-        }
-    }
-
     pub fn clear(&mut self) {
-        for _ in 0..SCREEN_HEIGHT {
-            self.new_line()
+        for row in 0..SCREEN_HEIGHT {
+            for cols in 0..SCREEN_WIDTH {
+                self.buffer().chars[row][cols] = ScreenChar {
+                    ascii_character: 0,
+                    color_code: self.color_code,
+                };
+            }
         }
     }
 }

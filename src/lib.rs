@@ -7,16 +7,16 @@ use core::fmt::Write;
 
 mod vga_console;
 
+#[macro_use]
+mod macros;
+
 #[no_mangle]
 pub fn kmain() {
   //unsafe { write!(vga_console::WRITER, "These are some numbers: {} {}", 42, 1.337); }
 
   vga_console::clear();
-  vga_console::write_str("This is a test of the VGA console code in our new kernel.");
-  vga_console::write_str("\n");
-  vga_console::write_str("\n");
-  write!(vga_console::writer(), "Here are some numbers: {} {}", 42, 1.337);
-
+  printk!("Hello from a new Rust kernel!\n\n");
+  printk!("Here are some numbers: {} {}\n\n", 42, 1.337);
 }
 
 #[lang = "eh_personality"] extern fn eh_personality() {}
