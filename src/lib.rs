@@ -7,12 +7,12 @@ mod vga_console;
 
 #[no_mangle]
 pub fn kmain() {
-  // vga_console::clear();
+  //unsafe { write!(vga_console::WRITER, "These are some numbers: {} {}", 42, 1.337); }
 
-  // unsafe { write!(vga_console::WRITER, "These are some numbers: {} {}", 42, 1.337); }
-  let s = "test";
-  unsafe { vga_console::WRITER.write_str(s); }
-  // unsafe { vga_console::WRITER.write_str("MattOS"); }
+  let s = "This is a test of the VGA console code in our new Rust OS.";
+  vga_console::clear();
+  vga_console::write_str(s);
+
 }
 
 #[lang = "eh_personality"] extern fn eh_personality() {}

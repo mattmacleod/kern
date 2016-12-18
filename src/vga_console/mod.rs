@@ -2,7 +2,7 @@ use core::ptr::Unique;
 
 const SCREEN_HEIGHT: usize = 25;
 const SCREEN_WIDTH: usize = 80;
-// const VGA_MEMORY_BASE: usize = 0xb8000;
+const VGA_MEMORY_BASE: usize = 0xb8000;
 
 #[repr(u8)]
 #[allow(dead_code)]
@@ -39,6 +39,7 @@ impl ColorCode {
 // ordering remains the same in memory (order is important here)
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 struct ScreenChar {
     ascii_character: u8,
     color_code: ColorCode,
@@ -59,13 +60,25 @@ pub struct Writer {
 }
 
 // Create a static Writer that we can use elsewhere
-pub static mut WRITER: Writer = Writer {
+static mut WRITER: Writer = Writer {
     column_position: 0,
     color_code: ColorCode::new(Color::LightGreen, Color::Black),
-    buffer: unsafe { Unique::new(0xb8000 as *mut _) }
+    buffer: unsafe { Unique::new(VGA_MEMORY_BASE as *mut _) }
 };
 
+// Implement the user-facing API of the VGA console – `clear` and `write_str`
+pub fn clear() {
+    unsafe { WRITER.clear(); }
+}
+
+pub fn write_str(s: &str) {
+    unsafe { WRITER.write_str(s); }
+}
+
+// Implement the console
 impl Writer {
+
+    // Write a byte to the screen, inserting a new line if required.
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
@@ -92,11 +105,32 @@ impl Writer {
         unsafe{ self.buffer.get_mut() }
     }
 
-    fn new_line(&mut self) {/* TODO */}
+    fn new_line(&mut self) {
+        for row in 0..(SCREEN_HEIGHT - 1) {
+            for cols in 0..SCREEN_WIDTH {
+                self.buffer().chars[row][cols] = self.buffer().chars[row + 1][cols]
+            }
+        }
+
+        for cols in 0..SCREEN_WIDTH {
+            self.buffer().chars[(SCREEN_HEIGHT - 1)][cols] = ScreenChar {
+                ascii_character: 0,
+                color_code: self.color_code,
+            };
+        }
+
+        self.column_position = 0;
+    }
 
     pub fn write_str(&mut self, s: &str) {
         for byte in s.bytes() {
           self.write_byte(byte)
+        }
+    }
+
+    pub fn clear(&mut self) {
+        for _ in 0..SCREEN_HEIGHT {
+            self.new_line()
         }
     }
 }
