@@ -10,3 +10,5 @@ name = "rlibc"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
+[metadata]
+"checksum rlibc 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "c22517d580b6e155b1b25e66e3445462870a26c5088a04e20a21d58d3bcba704"

@@ -1,9 +1,7 @@
-#![feature(no_std, lang_items, const_fn, unique, core_str_ext)]
+#![feature(lang_items, const_fn, unique)]
 #![no_std]
 
 extern crate rlibc;
-
-use core::fmt::Write;
 
 mod vga_console;
 
@@ -18,5 +16,5 @@ pub fn kmain() {
 }
 
 #[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }
- 
+#[lang = "panic_fmt"] #[no_mangle] pub extern fn panic_fmt() -> ! { loop {} }
+#[allow(non_snake_case)] #[no_mangle] pub extern "C" fn _Unwind_Resume() -> ! { loop {} }
