@@ -66,13 +66,17 @@ static mut WRITER: Writer = Writer {
     buffer: unsafe { Unique::new(VGA_MEMORY_BASE as *mut _) }
 };
 
-// Implement the user-facing API of the VGA console – `clear` and `write_str`
+// Implement the API of the VGA console – `clear`, `write_str`, and `writer`
 pub fn clear() {
     unsafe { WRITER.clear(); }
 }
 
 pub fn write_str(s: &str) {
     unsafe { WRITER.write_str(s); }
+}
+
+pub fn writer() -> &'static mut Writer {
+    unsafe { &mut WRITER }
 }
 
 // Implement the console

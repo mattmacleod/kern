@@ -3,15 +3,19 @@
 
 extern crate rlibc;
 
+use core::fmt::Write;
+
 mod vga_console;
 
 #[no_mangle]
 pub fn kmain() {
   //unsafe { write!(vga_console::WRITER, "These are some numbers: {} {}", 42, 1.337); }
 
-  let s = "This is a test of the VGA console code in our new Rust OS.";
   vga_console::clear();
-  vga_console::write_str(s);
+  vga_console::write_str("This is a test of the VGA console code in our new kernel.");
+  vga_console::write_str("\n");
+  vga_console::write_str("\n");
+  write!(vga_console::writer(), "Here are some numbers: {} {}", 42, 1.337);
 
 }
 
