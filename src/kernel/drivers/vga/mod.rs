@@ -1,4 +1,6 @@
 use core::ptr::Unique;
+use volatile::Volatile;
+use spin::{Mutex, MutexGuard};
 
 const SCREEN_HEIGHT: usize = 25;
 const SCREEN_WIDTH: usize = 80;
@@ -48,7 +50,7 @@ struct ScreenChar {
 // Define a buffer – this is a two-dimensional array of characters that
 // represent each addressable position on the screen.
 struct Buffer {
-    chars: [[ScreenChar; SCREEN_WIDTH]; SCREEN_HEIGHT],
+    chars: [[Volatile<ScreenChar>; SCREEN_WIDTH]; SCREEN_HEIGHT],
 }
 
 // Now define a Writer – this stores the state of the screen (i.e. current
@@ -60,19 +62,19 @@ pub struct Writer {
 }
 
 // Create a static Writer that we can use elsewhere
-static mut WRITER: Writer = Writer {
+static WRITER : Mutex<Writer> = Mutex::new(Writer {
     column_position: 0,
     color_code: ColorCode::new(Color::LightGreen, Color::Black),
     buffer: unsafe { Unique::new(VGA_MEMORY_BASE as *mut _) }
-};
+});
 
 // Implement the API of the VGA console – `clear`, `write_str`, and `writer`
 pub fn clear() {
-    unsafe { WRITER.clear(); }
+    WRITER.lock().clear();
 }
 
-pub fn writer() -> &'static mut Writer {
-    unsafe { &mut WRITER }
+pub fn writer() -> MutexGuard<'static, Writer> {
+    WRITER.lock()
 }
 
 // Implement the console
@@ -90,12 +92,12 @@ impl Writer {
 
                 let row = SCREEN_HEIGHT - 1;
                 let col = self.column_position;
-
-                self.buffer().chars[row][col] = ScreenChar {
+                let character = ScreenChar {
                     ascii_character: byte,
                     color_code: self.color_code,
                 };
 
+                self.buffer().chars[row][col].write(character);
                 self.column_position += 1;
             }
         }
@@ -108,28 +110,30 @@ impl Writer {
     fn new_line(&mut self) {
         for row in 0..(SCREEN_HEIGHT - 1) {
             for cols in 0..SCREEN_WIDTH {
-                self.buffer().chars[row][cols] = self.buffer().chars[row + 1][cols]
+                let buffer = self.buffer();
+                let character = buffer.chars[row][cols].read();
+                buffer.chars[row + 1][cols].write(character);
             }
         }
 
-        for cols in 0..SCREEN_WIDTH {
-            self.buffer().chars[(SCREEN_HEIGHT - 1)][cols] = ScreenChar {
-                ascii_character: 0,
-                color_code: self.color_code,
-            };
-        }
-
+        self.clear_row(SCREEN_HEIGHT - 1);
         self.column_position = 0;
     }
 
-    pub fn clear(&mut self) {
+    fn clear_row(&mut self, row : usize) {
+        let blank = ScreenChar {
+            ascii_character: 0,
+            color_code: self.color_code,
+        };
+
+        for col in 0..SCREEN_WIDTH {
+            self.buffer().chars[row][col].write(blank);
+        }
+    }
+
+    fn clear(&mut self) {
         for row in 0..SCREEN_HEIGHT {
-            for cols in 0..SCREEN_WIDTH {
-                self.buffer().chars[row][cols] = ScreenChar {
-                    ascii_character: 0,
-                    color_code: self.color_code,
-                };
-            }
+            self.clear_row(row);
         }
     }
 }
